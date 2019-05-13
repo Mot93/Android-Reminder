@@ -16,10 +16,18 @@ import java.util.List;
  * */
 public class ReminderListViewWrapper {
 
-    private View reminderList;
+    // Variable needed by the RecyclerView for it's management
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    /**
+     * reminderList is the view containing the RecyclerView
+     * the layout is defined in reminder_list_view.xml
+     * */
+    private View reminderList;
+    /**
+     * Collection of Reminder shown in the RecyclerView
+     * */
     private List<Reminder> reminders;
 
     /**

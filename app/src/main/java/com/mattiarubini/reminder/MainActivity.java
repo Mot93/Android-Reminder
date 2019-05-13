@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 
-
+// TODO: add a Floating Action Button
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -29,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * TODO: toggleRecyclerView is called when the TextView above the RecyclerView is clicked. Hides the RecyclerView and keeps the TextView
+     * */
     /*public void toggleRecyclerView(View v) {
         RecyclerView recyclerView = findViewById(R.id.recyclerview_reminders);
         if (recyclerView.getVisibility() == View.VISIBLE) recyclerView.setVisibility(View.GONE);

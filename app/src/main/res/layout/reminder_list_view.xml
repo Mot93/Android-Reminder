@@ -11,12 +11,19 @@
         android:id="@+id/text_view_reminder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:background="@drawable/ripple"
+        android:text="Text View"
         android:gravity="center"
         android:textAppearance="@color/colorPrimaryDark"
-        android:text="Text View"
         android:textSize="25dp"
-        android:clickable="true"/>
+        />
+
+    <!--Separates the title from the reminders-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_reminders"

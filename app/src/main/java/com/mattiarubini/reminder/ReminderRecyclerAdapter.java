@@ -33,7 +33,7 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
         // Must: super(android.view.View)
         public ReminderViewHolder(View v) {
             super(v);
-            reminderTitle = v.findViewById(R.id.reminder_title);
+            reminderTitle = v.findViewById(R.id.reminder_text);
             reminderTrigger = v.findViewById(R.id.reminder_trigger);
         }
     }
@@ -68,8 +68,8 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
         // Type casting in order to work on the public attributes
         ReminderViewHolder holder = (ReminderViewHolder) viewHolder;
         // Working on the views that are stored in public types
-        holder.reminderTitle.setText(reminders.get(i).getTitle());
-        holder.reminderTrigger.setText(reminders.get(i).getDate().toString());
+        holder.reminderTitle.setText(reminders.get(i).getText());
+        holder.reminderTrigger.setText(reminders.get(i).getTrigger());
     }
 
     /**
