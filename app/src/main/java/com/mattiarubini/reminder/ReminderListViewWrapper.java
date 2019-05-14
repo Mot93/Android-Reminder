@@ -6,11 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+// TODO: add all the methods to fully use the RecyclerView https://guides.codepath.com/android/Using-the-RecyclerView
 /**
  * Build and manage a list of reminders
  * */
@@ -40,6 +42,9 @@ public class ReminderListViewWrapper {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         // Inflating the list containing the reminders
         reminderList = layoutInflater.inflate(R.layout.reminder_list_view, null);
+        // Changing the title in the TextView whit the passed name
+        TextView titleView = reminderList.findViewById(R.id.text_view_reminder);
+        titleView.setText(name);
         // Setup of the RecyclerView
         recyclerView = (RecyclerView) reminderList.findViewById(R.id.recycler_view_reminders);
         // Setup layout manager of the recycleView
