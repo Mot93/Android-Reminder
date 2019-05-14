@@ -17,6 +17,7 @@
         android:gravity="center"
         android:textAppearance="@color/colorPrimaryDark"
         android:textSize="25dp"
+        android:onClick="toggleRecyclerView"
         />
 
     <!--Separates the title from the reminders-->

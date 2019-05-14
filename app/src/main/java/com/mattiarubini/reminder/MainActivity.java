@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.widget.LinearLayout;
+import android.view.View;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -30,11 +31,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO: toggleRecyclerView is called when the TextView above the RecyclerView is clicked. Hides the RecyclerView and keeps the TextView
+     * toggleRecyclerView is called when the TextView above the RecyclerView is clicked
+     * Hides the RecyclerView and keeps the TextView
+     * This function only works with the text_view_reminder in reminder_list_layout.xml
      * */
-    /*public void toggleRecyclerView(View v) {
-        RecyclerView recyclerView = findViewById(R.id.recyclerview_reminders);
+    public void toggleRecyclerView(View v) {
+        // First I get the root of the reminder_list_layout.xml which is a LinearLayout
+        LinearLayout linearLayout = (LinearLayout) v.getParent();
+        // From the LinearLayout I extract it's child the RecyclerView
+        RecyclerView recyclerView = (RecyclerView) linearLayout.findViewById(R.id.recycler_view_reminders);
+        // If the RecyclerView is visible, set it to gone and viceversa
         if (recyclerView.getVisibility() == View.VISIBLE) recyclerView.setVisibility(View.GONE);
         else recyclerView.setVisibility(View.VISIBLE);
-    }*/
+    }
 }

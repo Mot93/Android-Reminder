@@ -40,9 +40,6 @@ public class ReminderListViewWrapper {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         // Inflating the list containing the reminders
         reminderList = layoutInflater.inflate(R.layout.reminder_list_view, null);
-        // TODO: Changing the name the LinearLayout
-        // TODO: Changing the name the TextView
-        // TODO: Changing the name the RecyclerView
         // Setup of the RecyclerView
         recyclerView = (RecyclerView) reminderList.findViewById(R.id.recycler_view_reminders);
         // Setup layout manager of the recycleView
