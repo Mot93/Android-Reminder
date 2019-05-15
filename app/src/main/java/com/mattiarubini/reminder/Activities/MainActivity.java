@@ -1,25 +1,26 @@
-package com.mattiarubini.reminder;
+package com.mattiarubini.reminder.Activities;
 
 import android.arch.persistence.room.Room;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.view.View;
 
+import com.mattiarubini.reminder.R;
+import com.mattiarubini.reminder.RecyclerViewManagers.ReminderListViewWrapper;
+import com.mattiarubini.reminder.Utilities.DateManager;
 import com.mattiarubini.reminder.database.AppDatabase;
 import com.mattiarubini.reminder.database.CategoryReminderEntity;
 import com.mattiarubini.reminder.database.CategoryReminderDao;
+import com.mattiarubini.reminder.database.ReminderEntity;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 
-// TODO: make the ScrollView work with dynamic content
-
 // sudo adb start-server
-// TODO: add SQLite 3 using Room: https://developer.android.com/training/data-storage/room
 // TODO: add a Floating Action Button: https://developer.android.com/guide/topics/ui/floating-action-button
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +32,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initDatabase();
-        createReminderListLayout();
+        try {
+            createReminderListLayout();
+        } catch (Exception e){
+            Log.e("creatReminderLayout", e.toString());
+        }
     }
 
     /**
@@ -42,27 +47,28 @@ public class MainActivity extends AppCompatActivity {
         // Opening the connection to the database
         database = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "ReminderDatabase")
                 .allowMainThreadQueries()
+                .fallbackToDestructiveMigration() // TODO: this line destroy the previous schema and data, remember to update the schema, not dispose of it
                 .build();
         // Getting the Dao for categories
         CategoryReminderDao categoryDao = database.getCategoryReminderDao();
         // Adding the 3 base categories
         try{
-            CategoryReminderEntity category = new CategoryReminderEntity();
-            category.name = "At a time"; // Still has to happen
+            CategoryReminderEntity category = new CategoryReminderEntity("At a time"); // Still has to happen
             categoryDao.addCategory(category);
-            category.name = "Ongoing"; // It's going
+            category = new CategoryReminderEntity("Ongoing"); // It's going
             categoryDao.addCategory(category);
-            category.name = "Done"; // Completed
-        categoryDao.addCategory(category);}
-        catch(Exception e){
-
+            category = new CategoryReminderEntity("Done"); // Completed
+            categoryDao.addCategory(category);
+        } catch(Exception e){
+            Log.e("Inserting categories", e.toString());
         }
+        // Adding dummy
     }
 
     /**
      * Create a reminder_list_layout for each category
      * */
-    private void createReminderListLayout(){
+    private void createReminderListLayout() throws Exception{
         // Getting the Dao for Categories
         CategoryReminderDao categoriesDao = database.getCategoryReminderDao();
         // Getting all the categories
@@ -70,21 +76,13 @@ public class MainActivity extends AppCompatActivity {
         // Initializing the categories views
         reminderListViewWrappers = new ReminderListViewWrapper[categories.size()];
         // Implementing all the categories
-        List<Reminder> r = new ArrayList<Reminder>();
-        r.add(new Reminder("Reminder 1", new Date()));
-        r.add(new Reminder("Reminder 2", new Date()));
+        List<ReminderEntity> r = new ArrayList<ReminderEntity>();
+        r.add(new ReminderEntity("Reminder 1", DateManager.dateToString(new Date()), "hello"));
+        r.add(new ReminderEntity("Reminder 2", DateManager.dateToString(new Date()), "ciao"));
         for (int i=0; i<categories.size(); i++) {
-            reminderListViewWrappers[i] = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder),  categories.get(i).name, r);
-            reminderListViewWrappers[i].addReminder(new Reminder("Reminder 3", new Date()));
+            reminderListViewWrappers[i] = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder),  categories.get(i).getName(), r);
+            reminderListViewWrappers[i].addReminder(new ReminderEntity("Reminder 3", DateManager.dateToString(new Date()), "claro"));
         }
-        /*
-        List<Reminder> r = new ArrayList<Reminder>();
-        r.add(new Reminder("Reminder 1", new Date()));
-        r.add(new Reminder("Reminder 2", new Date()));
-        ReminderListViewWrapper rl = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder), "example 1", r);
-        rl.addReminder(new Reminder("Reminder 3", new Date()));
-        ReminderListViewWrapper rl2 = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder), "example 2", r);
-        */
     }
 
     /**

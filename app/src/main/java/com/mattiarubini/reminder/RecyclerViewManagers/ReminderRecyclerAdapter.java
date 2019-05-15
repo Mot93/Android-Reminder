@@ -1,4 +1,4 @@
-package com.mattiarubini.reminder;
+package com.mattiarubini.reminder.RecyclerViewManagers;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.mattiarubini.reminder.R;
+import com.mattiarubini.reminder.Utilities.DateManager;
+import com.mattiarubini.reminder.database.ReminderEntity;
+
+import org.w3c.dom.Entity;
+
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -16,7 +24,7 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
     /**
      * Array containing all my reminders
      * */
-    private List<Reminder> reminders;
+    private List<ReminderEntity> reminders;
 
     /**
      * Tipe of element contained in the RecyclerView using this adapter
@@ -36,12 +44,32 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
             reminderTitle = v.findViewById(R.id.reminder_text);
             reminderTrigger = v.findViewById(R.id.reminder_trigger);
         }
-    }
+
+        /**
+         * Replace the content of the views with the new data
+         * A specific class was created, in order to deal with different texts (plain text, bullet list, etcetera...) and triggers (time, location, etcetera...)
+         * */
+        public void ReplaceContent(ReminderEntity reminderEntity){
+            this.reminderTitle.setText(reminderEntity.getText());
+            this.reminderTrigger.setText(this.getTrigger(reminderEntity.getTrigger()));
+        }
+
+        private String getTrigger(String trigger){
+            try {
+                // For a better formatting, I am converting a string to a Data, back to a string
+                // TODO: better formatting than this
+                return DateManager.stringToDate(trigger).toString();
+            } catch (ParseException pe) {
+                return trigger;
+            }
+        }
+
+    }// ReminderViewHolder
 
     /**
      * Initialize the data inside to be showed in the RecycleView
      * */
-    public ReminderRecyclerAdapter(List<Reminder> reminders) {
+    public ReminderRecyclerAdapter(List<ReminderEntity> reminders) {
         this.reminders = reminders;
     }
 
@@ -62,14 +90,14 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
 
     /**
      * Replace the contents of a view (invoked by the layout manager)
+     * Use the
      * */
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int reminderListID) {
         // Type casting in order to work on the public attributes
-        ReminderViewHolder holder = (ReminderViewHolder) viewHolder;
-        // Working on the views that are stored in public types
-        holder.reminderTitle.setText(reminders.get(i).getText());
-        holder.reminderTrigger.setText(reminders.get(i).getTrigger());
+        ReminderViewHolder reminderHolder = (ReminderViewHolder) viewHolder;
+        // For a better management I used a custom function of ReminderViewHolder
+        reminderHolder.ReplaceContent(reminders.get(reminderListID));
     }
 
     /**

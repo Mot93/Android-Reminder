@@ -1,4 +1,4 @@
-package com.mattiarubini.reminder;
+package com.mattiarubini.reminder.RecyclerViewManagers;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,11 +8,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Date;
+import com.mattiarubini.reminder.R;
+import com.mattiarubini.reminder.database.ReminderEntity;
+
 import java.util.List;
 
-// TODO: add all the methods to fully use the RecyclerView https://guides.codepath.com/android/Using-the-RecyclerView
+// TODO: add all the methods to fully use the RecyclerView https://guides.codepath.com/android/Using-the-RecyclerView (ex: updateReminder, deleteReminder, etcetera...)
 /**
  * Build and manage a list of reminders
  * */
@@ -30,13 +31,13 @@ public class ReminderListViewWrapper {
     /**
      * Collection of Reminder shown in the RecyclerView
      * */
-    private List<Reminder> reminders;
+    private List<ReminderEntity> reminders;
 
     /**
      * The constructor add a reminder_list_view to the specified LinearLayout
      * The RecyclerView is started and the name of: the LinearLayout, the TextView and the RecyclerView are changed in function of the passed name from:
      * */
-    public ReminderListViewWrapper(Context context, LinearLayout listContainerView, String name, List<Reminder> remindersList) {
+    public ReminderListViewWrapper(Context context, LinearLayout listContainerView, String name, List<ReminderEntity> remindersList) {
         this.reminders = remindersList;
         // Getting the LayoutInflater from the context
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -60,7 +61,7 @@ public class ReminderListViewWrapper {
     /**
      * Add a reminder to the RecyclerView
      * */
-    public void addReminder(Reminder reminder) {
+    public void addReminder(ReminderEntity reminder) {
         // In Java the list are passed by reference and not value
         // Therefore when I update the list in the wrapper, the list in the RecyclerAdapter is updated as well
         reminders.add(reminder);
