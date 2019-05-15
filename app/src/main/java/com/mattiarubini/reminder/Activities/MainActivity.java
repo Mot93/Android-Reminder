@@ -1,6 +1,9 @@
 package com.mattiarubini.reminder.Activities;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.RoomDatabase;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -10,14 +13,13 @@ import android.view.View;
 
 import com.mattiarubini.reminder.R;
 import com.mattiarubini.reminder.RecyclerViewManagers.ReminderListViewWrapper;
-import com.mattiarubini.reminder.Utilities.DateManager;
 import com.mattiarubini.reminder.database.AppDatabase;
 import com.mattiarubini.reminder.database.CategoryReminderEntity;
 import com.mattiarubini.reminder.database.CategoryReminderDao;
+import com.mattiarubini.reminder.database.ReminderDao;
 import com.mattiarubini.reminder.database.ReminderEntity;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
 
 // sudo adb start-server
@@ -33,9 +35,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initDatabase();
         try {
-            createReminderListLayout();
+            populateFakeReminders();
+        } catch (Exception e) {
+            Log.e("add error", e.toString());
+        }
+        createReminderListLayout();
+        try {
+            deleteAll();
         } catch (Exception e){
-            Log.e("creatReminderLayout", e.toString());
+            Log.e("delete error", e.toString());
         }
     }
 
@@ -44,44 +52,56 @@ public class MainActivity extends AppCompatActivity {
      * Also adds all the basic categories
      * */
     private void initDatabase(){
+        // This code will be executed when the database is fist created, to pre-populate with the base categories
+        RoomDatabase.Callback rdc = new RoomDatabase.Callback() {
+            // onCreate populates the database with the base categories when it is fist created
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+                // Populating the database with the base categories
+                // Getting the baseCategories
+                String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+                // Adding the base categories to the database
+                for (int i=0; i<baseCategories.length; i++){
+                    String sqlStatement = "INSERT INTO CategoryReminderEntity ( name ) VALUES ('" + baseCategories[i] + "')";
+                    db.execSQL(sqlStatement);
+                }
+                Log.e("onCreate", "onCreate was executed");
+            }
+            // TODO: instead of using a try catch, check is a cegory exist and add it if needed
+            // onOpen populates the database with the base categories when it is fist created if the base categories are not present
+            @Override
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                super.onOpen(db);
+                String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+                for (int i=0; i<baseCategories.length; i++){
+                    try{
+                    String sqlStatement = "INSERT INTO CategoryReminderEntity ( name ) VALUES ('" + baseCategories[i] + "')";
+                    db.execSQL(sqlStatement);} catch (Exception e){}
+                }
+                Log.e("onOpen", "onOpen was executed");
+            }
+        };
         // Opening the connection to the database
         database = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "ReminderDatabase")
-                .allowMainThreadQueries()
+                .allowMainThreadQueries() // TODO: document this one
                 .fallbackToDestructiveMigration() // TODO: this line destroy the previous schema and data, remember to update the schema, not dispose of it
+                .addCallback(rdc) // Adds a callBack function, in this case is used to pre-populate the database with the base categories
                 .build();
-        // Getting the Dao for categories
-        CategoryReminderDao categoryDao = database.getCategoryReminderDao();
-        // Adding the 3 base categories
-        try{
-            CategoryReminderEntity category = new CategoryReminderEntity("At a time"); // Still has to happen
-            categoryDao.addCategory(category);
-            category = new CategoryReminderEntity("Ongoing"); // It's going
-            categoryDao.addCategory(category);
-            category = new CategoryReminderEntity("Done"); // Completed
-            categoryDao.addCategory(category);
-        } catch(Exception e){
-            Log.e("Inserting categories", e.toString());
-        }
-        // Adding dummy
-    }
+    }// initDatabase
 
     /**
      * Create a reminder_list_layout for each category
      * */
-    private void createReminderListLayout() throws Exception{
+    private void createReminderListLayout(){
         // Getting the Dao for Categories
         CategoryReminderDao categoriesDao = database.getCategoryReminderDao();
-        // Getting all the categories
+        // Getting all the categories in the database
         List<CategoryReminderEntity> categories = categoriesDao.getAll();
         // Initializing the categories views
         reminderListViewWrappers = new ReminderListViewWrapper[categories.size()];
-        // Implementing all the categories
-        List<ReminderEntity> r = new ArrayList<ReminderEntity>();
-        r.add(new ReminderEntity("Reminder 1", DateManager.dateToString(new Date()), "hello"));
-        r.add(new ReminderEntity("Reminder 2", DateManager.dateToString(new Date()), "ciao"));
         for (int i=0; i<categories.size(); i++) {
-            reminderListViewWrappers[i] = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder),  categories.get(i).getName(), r);
-            reminderListViewWrappers[i].addReminder(new ReminderEntity("Reminder 3", DateManager.dateToString(new Date()), "claro"));
+            reminderListViewWrappers[i] = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder),  categories.get(i).getName(), database);
         }
     }
 
@@ -99,4 +119,65 @@ public class MainActivity extends AppCompatActivity {
         if (recyclerView.getVisibility() == View.VISIBLE) recyclerView.setVisibility(View.GONE);
         else recyclerView.setVisibility(View.VISIBLE);
     }
+
+    private void populateFakeReminders() throws Exception{
+        ReminderDao reminderDao = database.getReminderDao();
+        Date date = new Date();
+        String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+        // inserting in "At a time"
+        ReminderEntity[] reminders = new ReminderEntity[4];
+        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[0]);
+        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[0]);
+        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[0]);
+        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[0]);
+        reminderDao.insert(reminders);
+        // Inserting Ongoing
+        reminders = new ReminderEntity[5];
+        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[1]);
+        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[1]);
+        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[1]);
+        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[1]);
+        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[1]);
+        reminderDao.insert(reminders);
+        // Inserting Done
+        reminders = new ReminderEntity[6];
+        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[2]);
+        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[2]);
+        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[2]);
+        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[2]);
+        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[2]);
+        reminders[5] = new ReminderEntity("Sixth of it's name", date.toString(), baseCategories[2]);
+        reminderDao.insert(reminders);
+    }
+
+    private void deleteAll() throws  Exception {
+        ReminderDao reminderDao = database.getReminderDao();
+        Date date = new Date();
+        String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+        // inserting in "At a time"
+        ReminderEntity[] reminders = new ReminderEntity[3];
+        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[0]);
+        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[0]);
+        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[0]);
+        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[0]);
+        reminderDao.delete(reminders);
+        // Inserting Ongoing
+        reminders = new ReminderEntity[4];
+        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[1]);
+        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[1]);
+        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[1]);
+        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[1]);
+        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[1]);
+        reminderDao.delete(reminders);
+        // Inserting Done
+        reminders = new ReminderEntity[5];
+        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[2]);
+        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[2]);
+        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[2]);
+        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[2]);
+        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[2]);
+        reminders[5] = new ReminderEntity("Sixth of it's name", date.toString(), baseCategories[2]);
+        reminderDao.delete(reminders);
+    }
+
 }

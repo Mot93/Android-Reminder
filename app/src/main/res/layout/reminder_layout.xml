@@ -9,7 +9,7 @@
     android:background="@drawable/ripple">
 
     <TextView
-        android:id="@+id/reminder_text"
+        android:id="@+id/reminder_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView

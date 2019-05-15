@@ -14,6 +14,9 @@ public interface CategoryReminderDao {
     @Query("SELECT * FROM CategoryReminderEntity")
     List<CategoryReminderEntity> getAll();
 
+    @Query("SELECT COUNT() FROM CategoryReminderEntity WHERE name = :category ")
+    int categoryExist(String category);
+
     @Insert
     void addCategory(CategoryReminderEntity... categories);
 

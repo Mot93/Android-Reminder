@@ -35,14 +35,14 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
      */
     public static class ReminderViewHolder extends RecyclerView.ViewHolder {
         // The following views are public to ease modification in onBindViewHolder
-        public TextView reminderTitle;
+        public TextView reminderContent;
         public TextView reminderTrigger;
 
         // Must: super(android.view.View)
         public ReminderViewHolder(View v) {
             super(v);
-            reminderTitle = v.findViewById(R.id.reminder_text);
-            reminderTrigger = v.findViewById(R.id.reminder_trigger);
+            this.reminderContent = v.findViewById(R.id.reminder_content);
+            this.reminderTrigger = v.findViewById(R.id.reminder_trigger);
         }
 
         /**
@@ -50,7 +50,7 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
          * A specific class was created, in order to deal with different texts (plain text, bullet list, etcetera...) and triggers (time, location, etcetera...)
          * */
         public void ReplaceContent(ReminderEntity reminderEntity){
-            this.reminderTitle.setText(reminderEntity.getText());
+            this.reminderContent.setText(reminderEntity.getContent());
             this.reminderTrigger.setText(this.getTrigger(reminderEntity.getTrigger()));
         }
 

@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mattiarubini.reminder.R;
+import com.mattiarubini.reminder.database.AppDatabase;
 import com.mattiarubini.reminder.database.ReminderEntity;
 
 import java.util.List;
@@ -37,7 +38,9 @@ public class ReminderListViewWrapper {
      * The constructor add a reminder_list_view to the specified LinearLayout
      * The RecyclerView is started and the name of: the LinearLayout, the TextView and the RecyclerView are changed in function of the passed name from:
      * */
-    public ReminderListViewWrapper(Context context, LinearLayout listContainerView, String name, List<ReminderEntity> remindersList) {
+    public ReminderListViewWrapper(Context context, LinearLayout listContainerView, String name, AppDatabase database) {
+        // Getting the reminders from the database
+        List<ReminderEntity> remindersList = database.getReminderDao().getFromCategory(name);
         this.reminders = remindersList;
         // Getting the LayoutInflater from the context
         LayoutInflater layoutInflater = LayoutInflater.from(context);

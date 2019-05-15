@@ -25,7 +25,7 @@ public class ReminderEntity {
     private int uid;
 
     @NonNull
-    private String text;
+    private String content;
 
     @NonNull
     private String trigger;
@@ -36,9 +36,10 @@ public class ReminderEntity {
     /**
      * Constructor
      * */
-    public ReminderEntity(String text, String trigger, String category){
-        this.text = text;
+    public ReminderEntity(String content, String trigger, String category){
+        this.content = content;
         this.trigger = trigger;
+        this.category = category;
     }
 
     public void setUid(int uid) {
@@ -49,12 +50,12 @@ public class ReminderEntity {
         return uid;
     }
 
-    public void setText(@NonNull String text) {
-        this.text = text;
+    public void setContent(@NonNull String text) {
+        this.content = text;
     }
 
-    public String getText(){
-        return text;
+    public String getContent(){
+        return content;
     }
 
     public void setTrigger(@NonNull String trigger) {
