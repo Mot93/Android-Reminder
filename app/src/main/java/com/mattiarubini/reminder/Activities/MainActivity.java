@@ -120,6 +120,13 @@ public class MainActivity extends AppCompatActivity {
         else recyclerView.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * When the floating button is pressed: add a reminder
+     * */
+    public void floatingActionButton(){
+        Log.e("FB", "pressed");
+    }
+
     private void populateFakeReminders() throws Exception{
         ReminderDao reminderDao = database.getReminderDao();
         Date date = new Date();
@@ -154,30 +161,9 @@ public class MainActivity extends AppCompatActivity {
         ReminderDao reminderDao = database.getReminderDao();
         Date date = new Date();
         String[] baseCategories = CategoryReminderEntity.getBaseCategories();
-        // inserting in "At a time"
-        ReminderEntity[] reminders = new ReminderEntity[3];
-        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[0]);
-        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[0]);
-        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[0]);
-        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[0]);
-        reminderDao.delete(reminders);
-        // Inserting Ongoing
-        reminders = new ReminderEntity[4];
-        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[1]);
-        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[1]);
-        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[1]);
-        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[1]);
-        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[1]);
-        reminderDao.delete(reminders);
-        // Inserting Done
-        reminders = new ReminderEntity[5];
-        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[2]);
-        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[2]);
-        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[2]);
-        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[2]);
-        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[2]);
-        reminders[5] = new ReminderEntity("Sixth of it's name", date.toString(), baseCategories[2]);
-        reminderDao.delete(reminders);
+        for (int i=0; i<baseCategories.length; i++){
+            reminderDao.deleteCategory(baseCategories[i]);
+        }
     }
 
 }

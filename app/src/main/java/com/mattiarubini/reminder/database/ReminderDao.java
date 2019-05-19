@@ -14,6 +14,9 @@ public interface ReminderDao {
     @Query("SELECT * FROM ReminderEntity WHERE category = :category_name")
     List<ReminderEntity> getFromCategory(String category_name);
 
+    @Query("DELETE FROM ReminderEntity WHERE category = :category")
+    void deleteCategory(String category);
+
     @Insert
     void insert(ReminderEntity... reminders);
 
