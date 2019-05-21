@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * When the floating button is pressed: add a reminder
+     * TODO: When the floating button is pressed: add a reminder
      * */
     public void floatingActionButton(View view){
         Log.e("FB", "pressed");

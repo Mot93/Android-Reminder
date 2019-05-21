@@ -14,7 +14,7 @@ public class CategoryReminderEntity {
      * This categories are not in the database
      * */
     @Ignore
-    public static String[] baseCategories = {"At a Time", "Ongoing", "Done"};
+    public static String[] baseCategories = {"At a Time", "Ongoing", "Finished"};
 
     @PrimaryKey
     @ColumnInfo(name = "name")

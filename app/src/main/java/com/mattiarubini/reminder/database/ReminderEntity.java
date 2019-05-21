@@ -26,8 +26,7 @@ public class ReminderEntity {
 
     @NonNull
     private String content;
-
-    @NonNull
+    
     private String trigger;
 
     @ColumnInfo(name = "category")
