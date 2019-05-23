@@ -57,7 +57,6 @@ public class ReminderRecyclerAdapter extends RecyclerView.Adapter {
         private String getTrigger(String trigger){
             try {
                 // For a better formatting, I am converting a string to a Data, back to a string
-                // TODO: better formatting than this
                 return DateManager.stringToDate(trigger).toString();
             } catch (ParseException pe) {
                 return trigger;

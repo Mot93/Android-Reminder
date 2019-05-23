@@ -3,15 +3,9 @@ package com.mattiarubini.reminder.database;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-
-import com.mattiarubini.reminder.Utilities.DateManager;
-
-import java.text.ParseException;
-import java.util.Date;
 
 @Entity(foreignKeys = @ForeignKey(entity = CategoryReminderEntity.class,
                                     parentColumns = "name",
@@ -31,6 +25,8 @@ public class ReminderEntity {
 
     @ColumnInfo(name = "category")
     private String category;
+
+    private boolean completed;
 
     /**
      * Constructor
@@ -73,4 +69,11 @@ public class ReminderEntity {
         return category;
     }
 
+    public boolean isCompleted(){
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
 }

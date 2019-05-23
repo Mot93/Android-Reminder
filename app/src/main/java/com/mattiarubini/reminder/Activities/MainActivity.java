@@ -3,16 +3,19 @@ package com.mattiarubini.reminder.Activities;
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.view.View;
 
 import com.mattiarubini.reminder.R;
 import com.mattiarubini.reminder.RecyclerViewManagers.ReminderListViewWrapper;
+import com.mattiarubini.reminder.Utilities.BaseCategories;
 import com.mattiarubini.reminder.database.AppDatabase;
 import com.mattiarubini.reminder.database.CategoryReminderEntity;
 import com.mattiarubini.reminder.database.CategoryReminderDao;
@@ -23,7 +26,8 @@ import java.util.List;
 import java.util.Date;
 
 // sudo adb start-server
-// TODO: add a Floating Action Button: https://developer.android.com/guide/topics/ui/floating-action-button
+// TODO: add a Tool Bar
+// TODO: add animation when a category collapse
 public class MainActivity extends AppCompatActivity {
 
     private AppDatabase database;
@@ -31,8 +35,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Init
         super.onCreate(savedInstanceState);
+        // Layout
         setContentView(R.layout.activity_main);
+        // Toolbar
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // App logic
         initDatabase();
         try {
             populateFakeReminders();
@@ -60,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onCreate(db);
                 // Populating the database with the base categories
                 // Getting the baseCategories
-                String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+                String[] baseCategories = BaseCategories.getBaseCategories();
                 // Adding the base categories to the database
                 for (int i=0; i<baseCategories.length; i++){
                     String sqlStatement = "INSERT INTO CategoryReminderEntity ( name ) VALUES ('" + baseCategories[i] + "')";
@@ -68,12 +78,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.e("onCreate", "onCreate was executed");
             }
-            // TODO: instead of using a try catch, check is a cegory exist and add it if needed
             // onOpen populates the database with the base categories when it is fist created if the base categories are not present
             @Override
             public void onOpen(@NonNull SupportSQLiteDatabase db) {
                 super.onOpen(db);
-                String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+                // TODO: instead of using a try catch, check if a category exist and add it if needed
+                String[] baseCategories = BaseCategories.getBaseCategories();
                 for (int i=0; i<baseCategories.length; i++){
                     try{
                     String sqlStatement = "INSERT INTO CategoryReminderEntity ( name ) VALUES ('" + baseCategories[i] + "')";
@@ -100,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         List<CategoryReminderEntity> categories = categoriesDao.getAll();
         // Initializing the categories views
         reminderListViewWrappers = new ReminderListViewWrapper[categories.size()];
+        // TODO: order to display each category
         for (int i=0; i<categories.size(); i++) {
             reminderListViewWrappers[i] = new ReminderListViewWrapper(this, (LinearLayout) findViewById(R.id.list_holder),  categories.get(i).getName(), database);
         }
@@ -121,46 +132,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO: When the floating button is pressed: add a reminder
+     * TODO: When the floating button is pressed: add a reminder in the activity AddReminderActivity
      * */
     public void floatingActionButton(View view){
-        Log.e("FB", "pressed");
+        Intent intent = new Intent(this, AddReminderActivity.class);
+        startActivity(intent);
     }
 
+    /**
+     * Insert fake reminders for each categories
+     * */
     private void populateFakeReminders() throws Exception{
         ReminderDao reminderDao = database.getReminderDao();
         Date date = new Date();
-        String[] baseCategories = CategoryReminderEntity.getBaseCategories();
-        // inserting in "At a time"
-        ReminderEntity[] reminders = new ReminderEntity[4];
-        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[0]);
-        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[0]);
-        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[0]);
-        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[0]);
-        reminderDao.insert(reminders);
-        // Inserting Ongoing
-        reminders = new ReminderEntity[5];
-        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[1]);
-        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[1]);
-        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[1]);
-        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[1]);
-        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[1]);
-        reminderDao.insert(reminders);
-        // Inserting Done
-        reminders = new ReminderEntity[6];
-        reminders[0] = new ReminderEntity("First of it's name", date.toString(), baseCategories[2]);
-        reminders[1] = new ReminderEntity("Second of it's name", date.toString(), baseCategories[2]);
-        reminders[2] = new ReminderEntity("Third of it's name", date.toString(), baseCategories[2]);
-        reminders[3] = new ReminderEntity("Fourth of it's name", date.toString(), baseCategories[2]);
-        reminders[4] = new ReminderEntity("Fifth of it's name", date.toString(), baseCategories[2]);
-        reminders[5] = new ReminderEntity("Sixth of it's name", date.toString(), baseCategories[2]);
-        reminderDao.insert(reminders);
+        String[] baseCategories = BaseCategories.getBaseCategories();
+        for (int i=0; i<baseCategories.length; i++){
+            ReminderEntity[] reminders = new ReminderEntity[i+2];
+            for (int y=0; y<reminders.length; y++){
+                reminders[y] = new ReminderEntity("Reminder number : "+y, date.toString(), baseCategories[i]);
+            }
+            reminderDao.insert(reminders);
+        }
     }
 
+    /**
+     * Delete all reminders in all categories
+     * */
     private void deleteAll() throws  Exception {
         ReminderDao reminderDao = database.getReminderDao();
         Date date = new Date();
-        String[] baseCategories = CategoryReminderEntity.getBaseCategories();
+        String[] baseCategories = BaseCategories.getBaseCategories();
         for (int i=0; i<baseCategories.length; i++){
             reminderDao.deleteCategory(baseCategories[i]);
         }
