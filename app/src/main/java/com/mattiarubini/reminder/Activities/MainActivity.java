@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.LinearLayout;
 import android.view.View;
 
+import com.mattiarubini.reminder.Activities.AddReminder.AddReminderActivity;
 import com.mattiarubini.reminder.R;
 import com.mattiarubini.reminder.RecyclerViewManagers.ReminderListViewWrapper;
 import com.mattiarubini.reminder.Utilities.BaseCategories;

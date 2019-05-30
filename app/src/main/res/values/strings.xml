@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Reminder</string>
+    <string-array name="spinner_dates">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Select date</item>
+    </string-array>
 </resources>
